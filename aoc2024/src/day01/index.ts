@@ -24,17 +24,16 @@ const parseInput = (rawInput: string) =>
 
 const part1 = (rawInput: string) => {
   const input = parseInput(rawInput);
-  let score = 0;
-  for (let idx = 0; idx < input[0].length; idx++) {
-    score += Math.abs(input[0][idx] - input[1][idx]);
-  }
-  return score;
+
+  return input[0].reduce((score, _, idx) => {
+    return score + Math.abs(input[0][idx] - input[1][idx]);
+  }, 0);
 };
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput);
 
-  return input[0].reduce((score, row, idx) => {
+  return input[0].reduce((score, row) => {
     const timesInSecond = input[1].filter((num) => num === row).length;
     return score + (row * timesInSecond);
   }, 0);
