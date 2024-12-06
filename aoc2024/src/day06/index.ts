@@ -14,8 +14,13 @@ enum Directions {
   DOWN = "v",
   LEFT = "<",
 }
+type Start = {
+  x: number;
+  y: number;
+  dir: Directions;
+};
 
-const parseInput = (rawInput: string) => {
+const parseInput: (rawInput: string) => { map: string[][], start: Start } = (rawInput) => {
   const map = rawInput.split("\n").map((row) => row.split(''));
   for (let y = 0; y < map.length; y++) {
     const row = map[y];
@@ -81,8 +86,8 @@ const printMap = (map: string[][], visited: Set<string>) => {
   });
 };
 
-const part1 = (rawInput: string) => {
-  const { map, start } = parseInput(rawInput);
+const doTry = (map: string[][], start: Start) => {
+
   const visited = new Set<string>();
   const visitedFrom = new Set<string>();
 
@@ -90,8 +95,9 @@ const part1 = (rawInput: string) => {
   log("map:");
   printMap(map, visited);
 
-  let curr = start;
+  let curr = {...start};
   let count = 0;
+  let foundALoop = false;
   while (true) {
     let shouldEnd = false;
     // Head in the current direction until we hit an obstacle
@@ -106,6 +112,7 @@ const part1 = (rawInput: string) => {
           y += 1;
         }
         if (y < 0 || y >= map.length) {
+          log('ending due to y overflow');
           shouldEnd = true;
           break;
         }
@@ -119,7 +126,9 @@ const part1 = (rawInput: string) => {
         const fromKey = visitedKey(x, y, curr.x, curr.y);
         if (visitedFrom.has(fromKey)) {
           // We've visited this before from this direction
+          log('FOUND A LOOP', cellKey);
           shouldEnd = true;
+          foundALoop = true;
           break;
         }
 
@@ -139,6 +148,7 @@ const part1 = (rawInput: string) => {
           x += 1;
         }
         if (x < 0 || x >= map[y].length) {
+          log('ending due to x overflow');
           shouldEnd = true;
           break;
         }
@@ -152,7 +162,9 @@ const part1 = (rawInput: string) => {
         const fromKey = visitedKey(x, y, curr.x, curr.y);
         if (visitedFrom.has(fromKey)) {
           // We've visited this before from this direction
+          log('FOUND A LOOP', cellKey);
           shouldEnd = true;
+          foundALoop = true;
           break;
         }
 
@@ -163,8 +175,8 @@ const part1 = (rawInput: string) => {
       }
     }
 
-    log("\n");
-    printMap(map, visited);
+    // log("\n");
+    // printMap(map, visited);
 
     if (shouldEnd) {
       log('ending!');
@@ -177,21 +189,79 @@ const part1 = (rawInput: string) => {
     }
   }
 
-  return map.reduce((score, row, y) => {
-    return score + row.reduce((score, cell, x) => {
-      return score + (visited.has(key(x, y)) ? 1 : 0);
-    }, 0);
-  }, 0);
+  log('visited?');
+  log(JSON.stringify([...visited].map((cell) => cell.split('-').map((num) => parseInt(num)))));
+  return {
+    visited,
+    visitedFrom,
+    foundALoop,
+    score: map.reduce((score, row, y) => {
+      return score + row.reduce((score, cell, x) => {
+        return score + (visited.has(key(x, y)) ? 1 : 0);
+      }, 0);
+    }, 0),
+  };
+}
+
+const part1 = (rawInput: string) => {
+  const { map, start } = parseInput(rawInput);
+
+  const { score } = doTry(map, start);
+
+  return score;
 };
 
 const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput);
+  const { map, start } = parseInput(rawInput);
 
-  return;
+  const { visited, score: origScore } = doTry(map, start);
+
+  // Iterate over every visited to determine if placing an obstruction there yields a loop
+  let idx = 0;
+  let totalScore = 0;
+  visited.forEach((key) => {
+    // if (idx++ > 30) {
+    //   return;
+    // }
+    const [x, y] = key.split('-').map((num) => parseInt(num));
+    const modMap = map.map((row) => [...row]);
+    modMap[y][x] = '#';
+
+    const { score, visited, foundALoop } = doTry(modMap, start);
+
+    log('\nattempted map due to:', x, y);
+    // log('visited:', visited);
+    printMap(modMap, visited);
+    if (foundALoop) {
+      totalScore += 1;
+      log('that map yielded:', foundALoop, score);
+    }
+
+  });
+
+  return totalScore;
 };
 
 run({
   part1: {
+    tests: [
+//       {
+//         input: `....#.....
+// .........#
+// ..........
+// ..#.......
+// .......#..
+// ..........
+// .#..^.....
+// ........#.
+// #.........
+// ......#...`,
+//         expected: 41,
+//       },
+    ],
+    solution: part1,
+  },
+  part2: {
     tests: [
       {
         input: `....#.....
@@ -204,17 +274,8 @@ run({
 ........#.
 #.........
 ......#...`,
-        expected: 41,
+        expected: 6,
       },
-    ],
-    solution: part1,
-  },
-  part2: {
-    tests: [
-      // {
-      //   input: ``,
-      //   expected: ,
-      // },
     ],
     solution: part2,
   },
