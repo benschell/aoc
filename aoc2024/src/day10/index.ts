@@ -1,7 +1,7 @@
 import run from "aocrunner";
 import { key, printMap } from "../utils/map.js";
 
-const onlyTests = true;
+const onlyTests = false;
 
 const log = (...str: any[]) => {
   if (onlyTests) {
@@ -69,6 +69,53 @@ const dfs = (map: string[][], x: number, y: number) => {
   log('returning:', numPaths);
   return numPaths;
 }
+const bfs = (map: string[][], x: number, y: number) => {
+  let nodes = new Array<[number, number][]>();
+  let explored = new Set<string>();
+  explored.add(key(x, y));
+  nodes.push([[x, y]]);
+  let numPaths = 0;
+  const paths = [];
+  log('starting:', x, y);
+  while (nodes.length) {
+    // log('\t\tlooping', nodes);
+    const path = nodes.shift();
+    if (path) {
+      const node = path[path.length-1];
+      const [x, y] = node;
+      log('examining:', x, y);
+      const curr = map[y][x];
+      if (curr === '9') {
+        // A goal
+        log('\t\t\t\t\tfound a path', x, y);
+        numPaths += 1;
+        paths.push(path);
+      } else {
+        const next = getNextNum(curr);
+        log('looking for', next);
+        // Push all adjacent edges of this node
+        if (x > 0 && map[y][x-1] === next) {
+          log('pushing', x-1, y);
+          nodes.push([...path, [x-1, y]]);
+        }
+        if (x < map[y].length - 1 && map[y][x+1] === next) {
+          log('pushing', x+1, y);
+          nodes.push([...path, [x+1, y]]);
+        }
+        if (y > 0 && map[y-1][x] === next) {
+          log('pushing', x, y-1);
+          nodes.push([...path, [x, y-1]]);
+        }
+        if (y < map.length - 1 && map[y+1][x] === next) {
+          log('pushing', x, y+1);
+          nodes.push([...path, [x, y+1]]);
+        }
+      }
+    }
+  }
+
+  return numPaths;
+}
 
 const part1 = (rawInput: string) => {
   const { map, zeros } = parseInput(rawInput);
@@ -81,13 +128,19 @@ const part1 = (rawInput: string) => {
     }
     return score;
   }, 0);
-
 };
 
 const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput);
-
-  return;
+  const { map, zeros } = parseInput(rawInput);
+  printMap(map, log);
+  return zeros.reduce((score, [x, y]) => {
+    log('checking:', x, y);
+    const numPaths = bfs(map, x, y);
+    if (numPaths > 0) {
+      return score + numPaths;
+    }
+    return score;
+  }, 0);
 };
 
 run({
@@ -146,10 +199,46 @@ run({
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: ,
-      // },
+      {
+        input: `.....0.
+..4321.
+..5..2.
+..6543.
+..7..4.
+..8765.
+..9....`,
+        expected: 3,
+      },
+      {
+        input: `..90..9
+...1.98
+...2..7
+6543456
+765.987
+876....
+987....`,
+        expected: 13,
+      },
+      {
+        input: `012345
+123456
+234567
+345678
+4.6789
+56789.`,
+        expected: 227,
+      },
+      {
+        input: `89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732`,
+        expected: 81,
+      },
     ],
     solution: part2,
   },
