@@ -8,104 +8,90 @@ const log = (...str: any[]) => {
   }
 };
 
-// enum Type {
-//   FILE = "FILE",
-//   FREE = "FREE",
-// };
-// type Entry = {
-//   num: number;
-//   type: Type;
-// };
-// const parseInput = (rawInput: string): { nums: Entry[] } => {
-//   const nums = rawInput.split('').map((numStr, idx) => {
-//     const num = parseInt(numStr);
-//     if (idx % 2 === 1){
-//       // Odd = free space
-//       return {
-//         type: Type.FREE,
-//         num,
-//       }
-//     } else {
-//       // Even = file
-//       return {
-//         type: Type.FILE,
-//         num,
-//       }
-//     }
-//   });
-//   return { nums, }
-// }
-// const printNums = (nums: Entry[]) => {
-//   let out = '';
-//   let fileCount = 0;
-//   nums.forEach((entry) => {
-//     let char = '.';
-//     if (entry.type === Type.FILE) {
-//       char = ''+fileCount++;
-//     }
-//     for (let i=0; i<entry.num; i++) {
-//       out += char;
-//     }
-//   });
-//   log(out);
-// };
 const parseInput = (rawInput: string) =>
   rawInput.split("").map((num) => parseInt(num));
 
 const part1 = (rawInput: string) => {
-  const nums = parseInput(rawInput);
-  log(nums);
-  let lastFileNum = (nums.length - 1) / 2;
-  let lastFile = nums.length - 1;
-  let score = 0;
-  let out = "";
-  let fileNum = 0;
-  for (let i = 0; i < nums.length; i++) {
-    // log('lastFile', lastFileNum, lastFile);
-    // log('current:', out);
-    // log('total:', nums.reduce((out, num) => out += num, ''));
-    if (i % 2 === 1) {
-      // Odd, so a free space
-      // Fill this free space with items from the end
-      for (let j = 0; j < nums[i]; j++) {
-        // Find a file from the end to fill with
-        while (nums[lastFile] === 0) {
-          // Move to an earlier file
-          lastFile -= 2;
-          lastFileNum--;
-        }
-        if (nums[lastFile] > 0) {
-          log("filling with:", lastFileNum, nums[lastFile]);
-          nums[lastFile]--;
-          log("adding to score:", out.length, lastFileNum, lastFileNum * out.length);
-          score += lastFileNum * out.length;
-          out += lastFileNum;
-        }
-      }
-    } else {
-      log("file!", i, nums[i]);
-      // Even, so a file
-      for (let j = 0; j < nums[i]; j++) {
-        log("adding to score 2:", out.length, fileNum, fileNum * out.length);
-        score += fileNum * out.length;
-        out += fileNum;
-      }
-      fileNum++;
-    }
-    if (lastFile <= i) break;
-  }
-  log(out);
-
-  // if (onlyTests) {
-  //   return out;
+  // const nums = parseInput(rawInput);
+  // let score = 0;
+  // let fileId = 0;
+  // let index = 0;
+  // let lastFileId = Math.floor(nums.length / 2);
+  // log(`last file id: ${lastFileId} @ ${nums.length - 1}`);
+  // while (true) {
+  //   if (!nums.length) {
+  //     break;
+  //   }
+  //   // Take off the first number (a file)
+  //   const file = nums.shift()!;
+  //   // Add this file to the score
+  //   for (let i = 0; i < file; i++) {
+  //     log(`incrementing score by: ${index} * ${fileId} = ${index * fileId}`);
+  //     score += index * fileId;
+  //     index += 1;
+  //   }
+  //   fileId += 1;
+  //   if (!nums.length) {
+  //     break;
+  //   }
+  //   const free = nums.shift()!;
+  //   log("handling free space:", free);
+  //   for (let i = 0; i < free; i++) {
+  //     // Take from the last file
+  //     if (nums[nums.length - 1] === 0) {
+  //       // This file has been emptied.
+  //       // Pop it and the free space before it.
+  //       // Pop the file
+  //       nums.pop();
+  //       // Pop the free space
+  //       nums.pop();
+  //       // Decrement the lastFileId
+  //       // (we're moving on to the next earlier file)
+  //       lastFileId -= 1;
+  //     }
+  //     if (lastFileId <= fileId) {
+  //       break;
+  //     }
+  //     // Take from the last file
+  //     log(
+  //       `incrementing score by: ${index} * ${lastFileId} = ${
+  //         index * lastFileId
+  //       }`,
+  //     );
+  //     score += index * lastFileId;
+  //     index += 1;
+  //     nums[nums.length - 1] -= 1;
+  //   }
   // }
-  return score;
+  // return score;
 };
 
 const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput);
-
-  return;
+  const nums = parseInput(rawInput);
+  let lastFileId = Math.floor(nums.length / 2);
+  const fileIndexes = new Set<number>();
+  for (
+    let lastFileIndex = nums.length - 1;
+    lastFileIndex > 0;
+    lastFileIndex -= 2
+  ) {
+    log(`examining file @ ${lastFileId}: ${nums[lastFileIndex]}`);
+    // Find index of first entry in nums that == nums[lastFileIndex]
+    log(nums);
+    const idx = nums.findIndex(
+      (num, idx) =>
+        idx % 2 === 0 && num === nums[lastFileIndex] && !fileIndexes.has(idx),
+    );
+    if (idx !== -1) {
+      log(`\t moving ${lastFileId} to ${idx}`);
+      // Move this to this location!
+      nums[idx] = lastFileId;
+      fileIndexes.add(idx);
+    }
+    lastFileId -= 1;
+  }
+  let score = 0;
+  return score;
 };
 
 run({
@@ -116,15 +102,20 @@ run({
         expected: 1928,
         // expected: "0099811188827773336446555566",
       },
+      {
+        input: `2333133121484131402`,
+        expected: 1928,
+        // expected: "0099811188827773336446555566",
+      },
     ],
     solution: part1,
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: ,
-      // },
+      {
+        input: `2333133121414131402`,
+        expected: 2858,
+      },
     ],
     solution: part2,
   },
