@@ -8,7 +8,17 @@ const log = (...str: any[]) => {
   }
 };
 
-const parseInput = (rawInput: string) =>
+type Point = {
+  x: number;
+  y: number;
+}
+type ClawMachine = {
+  a: Point;
+  b: Point;
+  prize: Point;
+}
+
+const parseInput = (rawInput: string): ClawMachine[] =>
   rawInput.split("\n\n").map((section) => {
     const lines = section.split("\n");
     const a = lines[0]
@@ -52,8 +62,7 @@ const parseInput = (rawInput: string) =>
  * B tokens = ------------------------
  *                    bx
  */
-const part1 = (rawInput: string) => {
-  const input = parseInput(rawInput);
+const solve = (input: ClawMachine[]) => {
   return input.reduce((score, cm, idx) => {
     const { a, b, prize} = cm;
     const num = ((prize.y * b.x) - (prize.x * b.y));
@@ -62,18 +71,28 @@ const part1 = (rawInput: string) => {
     if (Number.isInteger(aTokens)) {
       log(`Machine ${idx} returns an integer! ${aTokens}`);
       const bTokens = (prize.x - (a.x * aTokens)) / b.x;
-      const cost = aTokens * 3 + bTokens;
-      log(`Computed token counts: a=${aTokens}, b=${bTokens} => cost=${cost}`)
-      return score + cost;
+      if (Number.isInteger(bTokens)) {
+        const cost = aTokens * 3 + bTokens;
+        log(`Computed token counts: a=${aTokens}, b=${bTokens} => cost=${cost}`)
+        return score + cost;
+      }
     }
     return score;
   }, 0);
+}
+const part1 = (rawInput: string) => {
+  const input = parseInput(rawInput);
+  return solve(input);
 };
 
 const part2 = (rawInput: string) => {
   const input = parseInput(rawInput);
+  input.forEach((cm) => {
+    cm.prize.x += 10000000000000;
+    cm.prize.y += 10000000000000;
+  });
 
-  return;
+  return solve(input);
 };
 
 run({
@@ -102,10 +121,24 @@ Prize: X=18641, Y=10279`,
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: ,
-      // },
+      {
+        input: `Button A: X+94, Y+34
+Button B: X+22, Y+67
+Prize: X=8400, Y=5400
+
+Button A: X+26, Y+66
+Button B: X+67, Y+21
+Prize: X=12748, Y=12176
+
+Button A: X+17, Y+86
+Button B: X+84, Y+37
+Prize: X=7870, Y=6450
+
+Button A: X+69, Y+23
+Button B: X+27, Y+71
+Prize: X=18641, Y=10279`,
+        expected: 875318608908,
+      },
     ],
     solution: part2,
   },
