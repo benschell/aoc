@@ -1,5 +1,6 @@
 import run from "aocrunner";
 import { key, LogFunc } from "../utils/map.js";
+import { createInterface } from "node:readline/promises";
 
 const onlyTests = false;
 
@@ -150,10 +151,84 @@ const part1 = (rawInput: string) => {
   return score;
 };
 
-const part2 = (rawInput: string) => {
+const part2 = async (rawInput: string) => {
   const input = parseInput(rawInput);
 
-  return;
+  const map: Map<number, Robot>[][] = [];
+  const yLength = onlyTests ? 7 : 103;
+  const xLength = onlyTests ? 11 : 101;
+  for (let y = 0; y < yLength; y++) {
+    map.push([]);
+    for (let x = 0; x < xLength; x++) {
+      map[y][x] = new Map();
+    }
+  }
+
+  input.forEach((robot) => {
+    const { x, y } = robot.curr;
+    map[y][x].set(robot.idx, robot);
+  });
+
+  log(`\ninitial map`);
+  printMap(map, log);
+  const limit = 100;
+
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  let sec = 0;
+  while (true) {
+    input.forEach((robot) => {
+      const { idx, curr, velocity } = robot;
+      const { x, y } = curr;
+      // log(
+      //   `\t moving ${idx} from ${x},${y} by ${velocity.x},${velocity.y}`,
+      // );
+      curr.x += velocity.x;
+      curr.y += velocity.y;
+      if (curr.x <= 0) {
+        curr.x = xLength + curr.x;
+      }
+      if (curr.x >= xLength) {
+        curr.x = curr.x - xLength;
+      }
+      if (curr.y <= 0) {
+        curr.y = yLength + curr.y;
+      }
+      if (curr.y >= yLength) {
+        curr.y = curr.y - yLength;
+      }
+      map[y][x].delete(idx);
+      map[curr.y][curr.x].set(idx, robot);
+      // log(`\t moved ${idx} to ${curr.x},${curr.y}`);
+    });
+
+    // Detect if we've got a cluster of "most" of the robots
+    let topLeft = computeQuadrant(map, 0, ((xLength - 1) / 2) - 1, 0, ((yLength -1) / 2) - 1);
+    let topRight = computeQuadrant(map, ((xLength - 1) / 2) + 1, xLength - 1,0, ((yLength -1) / 2) - 1);
+    let bottomLeft = computeQuadrant(map, 0, ((xLength - 1) / 2) - 1, ((yLength -1) / 2) + 1, yLength - 1);
+    let bottomRight = computeQuadrant(map, ((xLength - 1) / 2) + 1, xLength - 1, ((yLength -1) / 2) + 1, yLength - 1);
+    if (
+      topLeft >= input.length / 2 ||
+      topRight >= input.length / 2 ||
+      bottomLeft >= input.length / 2 ||
+      bottomRight >= input.length / 2
+    ) {
+      console.log(`\nmap after ${sec + 1} secs`);
+      printMap(map, console.log);
+
+      const cont = await rl.question(`Was that a tree? @ ${sec + 1} `);
+      if (cont === 'y') {
+        rl.close();
+        return sec + 1;
+      }
+    }
+    sec += 1;
+  }
+
+  return -1;
 };
 
 run({
