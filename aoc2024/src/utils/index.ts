@@ -29,3 +29,25 @@
  *     import { myUtil } from '../utils'
  *
  */
+
+import { createInterface, Interface } from "node:readline/promises";
+
+let rl: Interface | undefined;
+export const startInput = () => {
+  if (!rl) {
+    rl = createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+  }
+};
+export const question: Interface["question"] = (query) => {
+  startInput();
+  return rl!.question(query+' ');
+};
+export const close: Interface["close"] = () => {
+  if (rl) {
+    rl.close();
+    rl = undefined;
+  }
+};
