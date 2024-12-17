@@ -1,5 +1,25 @@
 export type LogFunc = (...args: any[]) => void;
 
+export type Point = {
+  x: number;
+  y: number;
+};
+export const createPoint: () => Point = () => ({ x: -1, y: -1 });
+export enum Direction {
+  N = "N",
+  E = "E",
+  S = "S",
+  W = "W",
+}
+export type Robot = Point & {
+  facing: Direction;
+};
+export const createRobot: (direction: Direction) => Robot = (facing) => ({
+  x: -1,
+  y: -1,
+  facing,
+});
+
 export const iterateOnRows = (
   map: string[][],
   rowFunc: (row: string[], idx: number) => { break: boolean; result?: unknown },
