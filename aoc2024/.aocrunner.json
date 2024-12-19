@@ -239,21 +239,21 @@
         "attempts": [
           "5"
         ],
-        "time": 0.595
+        "time": 0.038542
       },
       "part2": {
         "solved": false,
-        "result": null,
+        "result": "47006052",
         "attempts": [],
-        "time": null
+        "time": 1.033666
       }
     },
     {
       "part1": {
-        "solved": false,
-        "result": null,
+        "solved": true,
+        "result": "438",
         "attempts": [],
-        "time": null
+        "time": 5691.220166
       },
       "part2": {
         "solved": false,

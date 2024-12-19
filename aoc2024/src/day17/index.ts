@@ -28,6 +28,7 @@ type Computer = {
   b: number;
   c: number;
   iptr: number;
+  instrsStr: string;
   instrs: Instruction[];
 };
 const getOpcodeFromStr: (instr: number) => OpCode = (instr) => {
@@ -48,6 +49,7 @@ const parseInput = (rawInput: string) => {
     b: -1,
     c: -1,
     iptr: 0,
+    instrsStr: "",
     instrs: [],
   };
   const parts = rawInput.split("\n\n");
@@ -57,6 +59,7 @@ const parseInput = (rawInput: string) => {
   computer.c = parseInt(state[2].split(": ")[1]);
 
   const instrs = parts[1].split(": ")[1];
+  computer.instrsStr = instrs;
   for (let i = 0; i < instrs.length; i += 4) {
     computer.instrs.push({
       opcode: getOpcodeFromStr(parseInt(instrs[i])),
@@ -105,19 +108,17 @@ const set: (
   computer[reg] = val;
 };
 
-const part1 = (rawInput: string) => {
-  const computer = parseInput(rawInput);
-
+const runComputer = (computer: Computer, outToMatch?: string) => {
   let out: number[] = [];
   let count = 0;
-  console.log('initial state:', computer);
+  log("initial state:", computer);
   while (true) {
     if (++count > 100) {
       console.log("BREAKING EARLY, SHOULD REMOVE THIS CHECK");
       break;
     }
     if (computer.iptr >= computer.instrs.length) {
-      console.log(computer.iptr, 'is >=', computer.instrs.length);
+      log(computer.iptr, "is >=", computer.instrs.length);
       break;
     }
 
@@ -156,6 +157,14 @@ const part1 = (rawInput: string) => {
     } else if (instr.opcode === OpCode.OUT) {
       log("adding to out:", operand % 8);
       out.push(operand % 8);
+      if (outToMatch) {
+        const currOut = out.join(",");
+        // console.log('comparing:', currOut, outToMatch);
+        if (outToMatch.substring(0, currOut.length) !== currOut) {
+          // console.log('throwing error because they don\'t match:', outToMatch.substring(0, currOut.length), currOut);
+          throw new Error(`${currOut} is not matching ${outToMatch}`);
+        }
+      }
     } else {
       throw new Error(`Unknown opcode: ${instr.opcode}`);
     }
@@ -167,13 +176,53 @@ const part1 = (rawInput: string) => {
   log(computer);
   log(`Out: ${out.join(",")}`);
 
+  return out;
+};
+
+const part1 = (rawInput: string) => {
+  const computer = parseInput(rawInput);
+  const out = runComputer(computer);
   return out.join(",");
 };
 
 const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput);
+  const computer = parseInput(rawInput);
 
-  return;
+  /**
+successfully ran, but not matching: 105995885 2,4,1,3,7,5,1,5,0
+successfully ran, but not matching: 105995967 2,4,1,3,7,5,1,5,0
+...
+successfully ran, but not matching: 106126957 2,4,1,3,7,5,1,5,0
+successfully ran, but not matching: 106127039 2,4,1,3,7,5,1,5,0
+   */
+  let a = 2232000000; //168000000;
+  let out = [];
+  while (true) {
+    const comp = {
+      ...computer,
+      a,
+    };
+    // console.log('state:', comp);
+
+    try {
+      if (a % 1000000 === 0) 
+        console.log('Trying:', a);
+      // out = runComputer(comp, '6,2,7,2,3,1,6,0,5');
+      out = runComputer(comp, computer.instrsStr);
+      // console.log('out:', out.join(','));
+      if (out.join(',') === computer.instrsStr) {
+        return a;
+      } else {
+        console.log('successfully ran, but not matching:', a, out.join(','));
+      }
+    } catch (e) {
+      if (a % 1000000 === 0) 
+        console.log(a, 'nope!');
+    }
+    a += 1;
+  }
+
+  return a;
 };
 
 run({
