@@ -1,6 +1,6 @@
 import run from "aocrunner";
 
-const onlyTests = false;
+const onlyTests = true;
 
 const log = (...str: any[]) => {
   if (onlyTests) {
@@ -47,14 +47,67 @@ const part1 = (rawInput: string) => {
   }, 0);
 };
 
-const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput);
+const resultCache = new Map<string, number>();
+const checkComboPartTwo: (combo: string, types: string[]) => number = (combo, types) => {
+  log(`Checking ${combo} against ${types.length > 0 && types.join(', ')}`);
+  if (resultCache.has(combo)) {
+    log('\t\treturning from cache', combo, resultCache.get(combo));
+    return resultCache.get(combo)!;
+  }
+  // Find all types that the combo starts with
+  const candidates = types.filter((type) => combo.startsWith(type));
+  log(`\t${combo} starts with: ${candidates.join(',')}`);
+  // Try removing each of these types and seeing what happens
+  let count = 0;
+  for ( const candidate of candidates ){ 
+    log('\tcandidate:', candidate);
+    if (candidate === combo) {
+      log('\t\tincrementing count', combo);
+      count += 1;
+    } else {
+      log('\t\trecursing', combo, candidate);
+      count += checkComboPartTwo(combo.substring(candidate.length), types);
+    }
+  }
+  resultCache.set(combo, count);
+  log('\t\treturning', combo, count);
+  return count;
+}
 
-  return;
+const part2 = (rawInput: string) => {
+  const { types, combos } = parseInput(rawInput);
+  log(types);
+  log(combos);
+
+  return combos.reduce((score, combo, idx) => {
+    // if (idx > 1) return score;
+    log('\n');
+    const ret = checkComboPartTwo(combo, types);
+    log(`for ${combo} and ${types.join(',')}, how many solutions? ${ret}`)
+    return score + ret;
+  }, 0);
 };
 
 run({
   part1: {
+    tests: [
+//       {
+//         input: `r, wr, b, g, bwu, rb, gb, br
+
+// brwrr
+// bggr
+// gbbr
+// rrbgbr
+// ubwu
+// bwurrg
+// brgr
+// bbrgwb`,
+//         expected: 6,
+//       },
+    ],
+    solution: part1,
+  },
+  part2: {
     tests: [
       {
         input: `r, wr, b, g, bwu, rb, gb, br
@@ -67,17 +120,8 @@ ubwu
 bwurrg
 brgr
 bbrgwb`,
-        expected: 6,
+        expected: 16,
       },
-    ],
-    solution: part1,
-  },
-  part2: {
-    tests: [
-      // {
-      //   input: ``,
-      //   expected: ,
-      // },
     ],
     solution: part2,
   },
