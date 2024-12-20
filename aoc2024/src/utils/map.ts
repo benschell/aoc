@@ -61,16 +61,20 @@ export const coordFromKey = (key: string) =>
     );
 export const fromKey = (x: number, y: number, fx: number, fy: number) =>
   `${key(x, y)}via${fx}-${fy}}`;
+export type PrintCellFunc = (cell: string, x: number, y: number) => string;
 export const printMap = (
   map: string[][],
   log: LogFunc,
   visited?: Set<string>,
+  perCell?: PrintCellFunc,
 ) => {
   iterateOnRows(map, (row, y) => {
     let visitedRow = "";
     for (let x = 0; x < row.length; x++) {
       if (visited && visited.has(key(x, y))) {
         visitedRow += "+";
+      } else if (perCell) {
+        visitedRow += perCell(row[x], x, y);
       } else {
         visitedRow += row[x];
       }
