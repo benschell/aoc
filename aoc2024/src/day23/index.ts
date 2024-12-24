@@ -1,6 +1,6 @@
 import run from "aocrunner";
 
-const onlyTests = false;
+const onlyTests = true;
 
 const log = (...str: any[]) => {
   if (onlyTests) {
@@ -37,8 +37,6 @@ const part1 = (rawInput: string) => {
   const found = new Set<string>();
   connections.forEach((first) => {
     if (first.label.startsWith('t')) {
-      // Look at each of its ends and see if any of them have >1 ends
-      // (that are not this one!)
       log(`examining peers of ${first.label}:`);
       first.ends.forEach((secondLabel) => {
         const second = connections.get(secondLabel)!;
@@ -61,8 +59,27 @@ const part1 = (rawInput: string) => {
 };
 
 const part2 = (rawInput: string) => {
-  const input = parseInput(rawInput);
-
+  const { connections } = parseInput(rawInput);
+  const found = new Set<string>();
+  connections.forEach((first) => {
+    log(`examining peers of ${first.label}:`);
+    first.ends.forEach((secondLabel) => {
+      const second = connections.get(secondLabel)!;
+      log(`\texamining peers of ${secondLabel};`);
+      second.ends.forEach((thirdLabel) => {
+        if (thirdLabel === first.label) { return; }
+        
+        const third = connections.get(thirdLabel)!;
+        if (third.ends.includes(first.label)) {
+          // Third connects back to First, so we have a cycle!
+          const idxKey = key([first.label, secondLabel, thirdLabel]);
+          log(`\t\tWill include this cycle: ${idxKey}`);
+          found.add(idxKey);
+        }
+      });
+    });
+  });
+  // Try each key and see if 
   return;
 };
 
@@ -109,10 +126,41 @@ td-yn`,
   },
   part2: {
     tests: [
-      // {
-      //   input: ``,
-      //   expected: ,
-      // },
+      {
+        input: `kh-tc
+qp-kh
+de-cg
+ka-co
+yn-aq
+qp-ub
+cg-tb
+vc-aq
+tb-ka
+wh-tc
+yn-cg
+kh-ub
+ta-co
+de-co
+tc-td
+tb-wq
+wh-td
+ta-ka
+td-qp
+aq-cg
+wq-ub
+ub-vc
+de-ta
+wq-aq
+wq-vc
+wh-yn
+ka-de
+kh-ta
+co-tc
+wh-qp
+tb-vc
+td-yn`,
+        expected: 'co,de,ka,ta',
+      },
     ],
     solution: part2,
   },
