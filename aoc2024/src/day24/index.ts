@@ -1,11 +1,11 @@
 import run from "aocrunner";
 
-const onlyTests = true;
+const onlyTests = false;
 
 const log = (...str: any[]) => {
-  if (onlyTests) {
+  // if (onlyTests) {
     console.log(...str);
-  }
+  // }
 };
 
 const parseInput = (rawInput: string) => {
@@ -78,9 +78,8 @@ const part1 = (rawInput: string) => {
       out += 1;
     }
   }
-  log({ out });
-
   log(registers);
+  log({ out });
 
   return out;
 };

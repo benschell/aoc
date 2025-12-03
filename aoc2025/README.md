@@ -1,19 +1,19 @@
 <!-- Entries between SOLUTIONS and RESULTS tags are auto-generated -->
 
-[![AoC](https://badgen.net/badge/AoC/2023/blue)](https://adventofcode.com/2023)
+[![AoC](https://badgen.net/badge/AoC/2025/blue)](https://adventofcode.com/2025)
 [![Node](https://badgen.net/badge/Node/v16.13.0+/blue)](https://nodejs.org/en/download/)
 ![Language](https://badgen.net/badge/Language/TypeScript/blue)
 [![Template](https://badgen.net/badge/Template/aocrunner/blue)](https://github.com/caderek/aocrunner)
 
-# 🎄 Advent of Code 2023 🎄
+# 🎄 Advent of Code 2025 🎄
 
 ## Solutions
 
 <!--SOLUTIONS-->
 
-![Day](https://badgen.net/badge/01/%E2%98%86%E2%98%86/gray)
-![Day](https://badgen.net/badge/02/%E2%98%86%E2%98%86/gray)
-![Day](https://badgen.net/badge/03/%E2%98%86%E2%98%86/gray)
+[![Day](https://badgen.net/badge/01/%E2%98%85%E2%98%85/green)](src/day01)
+[![Day](https://badgen.net/badge/02/%E2%98%85%E2%98%85/green)](src/day02)
+[![Day](https://badgen.net/badge/03/%E2%98%85%E2%98%85/green)](src/day03)
 ![Day](https://badgen.net/badge/04/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/05/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/06/%E2%98%86%E2%98%86/gray)
@@ -27,11 +27,11 @@
 ![Day](https://badgen.net/badge/14/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/15/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/16/%E2%98%86%E2%98%86/gray)
-[![Day](https://badgen.net/badge/17/%E2%98%85%E2%98%85/green)](src/day17)
+![Day](https://badgen.net/badge/17/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/18/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/19/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/20/%E2%98%86%E2%98%86/gray)
-[![Day](https://badgen.net/badge/21/%E2%98%85%E2%98%86/yellow)](src/day21)
+![Day](https://badgen.net/badge/21/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/22/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/23/%E2%98%86%E2%98%86/gray)
 ![Day](https://badgen.net/badge/24/%E2%98%86%E2%98%86/gray)
@@ -46,19 +46,19 @@ _Click a badge to go to the specific day._
 ## Installation
 
 ```
-npm i
+pnpm install
 ```
 
 ## Running in dev mode
 
 ```
-npm start <day>
+pnpm start <day>
 ```
 
 Example:
 
 ```
-npm start 1
+pnpm start 1
 ```
 
 ---
@@ -69,23 +69,23 @@ npm start 1
 
 ```
 Day 01
-Time part 1: -
-Time part 2: -
-Both parts: -
+Time part 1: 0.347ms
+Time part 2: 0.339ms
+Both parts: 0.685ms
 ```
 
 ```
 Day 02
-Time part 1: -
-Time part 2: -
-Both parts: -
+Time part 1: 42.069ms
+Time part 2: 881.625ms
+Both parts: 923.694ms
 ```
 
 ```
 Day 03
-Time part 1: -
-Time part 2: -
-Both parts: -
+Time part 1: 0.611ms
+Time part 2: 1.347ms
+Both parts: 1.957ms
 ```
 
 ```
@@ -181,9 +181,9 @@ Both parts: -
 
 ```
 Day 17
-Time part 1: 431.941ms
-Time part 2: 1590.855ms
-Both parts: 2022.795ms
+Time part 1: -
+Time part 2: -
+Both parts: -
 ```
 
 ```
@@ -209,9 +209,9 @@ Both parts: -
 
 ```
 Day 21
-Time part 1: 34.521ms
+Time part 1: -
 Time part 2: -
-Both parts: 34.521ms
+Both parts: -
 ```
 
 ```
@@ -243,8 +243,8 @@ Both parts: -
 ```
 
 ```
-Total stars: 3/50
-Total time: 2057.316ms
+Total stars: 6/50
+Total time: 926.337ms
 ```
 
 <!--/RESULTS-->

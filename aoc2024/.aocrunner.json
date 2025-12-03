@@ -343,7 +343,7 @@
         "attempts": [
           "288671462"
         ],
-        "time": 1.178042
+        "time": 1.410958
       },
       "part2": {
         "solved": false,
@@ -357,7 +357,7 @@
         "solved": true,
         "result": "2815",
         "attempts": [],
-        "time": 3.267459
+        "time": 3.246167
       },
       "part2": {
         "solved": false,
