@@ -1,6 +1,6 @@
 import run from "aocrunner";
 const ONLY_TESTS = true;
-const DEBUG = true;
+const DEBUG = ONLY_TESTS;
 const log = (...args: any[]) => DEBUG && console.log.apply(null, args);
 
 const parseInput = (rawInput: string) => rawInput;
